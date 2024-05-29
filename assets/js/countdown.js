@@ -1,60 +1,57 @@
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', () => {
     'use strict';
-    /*========== Countdown start ================*/
-    var date = $('#timer').data('date');
 
-    // countdown
-    let timer = setInterval(function () {
-        var endTime = new Date(date);
-        // console.log(endTime);
-        endTime = Date.parse(endTime) / 1000;
+    const date = document.getElementById('timer').dataset.date;
 
-        var now = new Date();
-        now = Date.parse(now) / 1000;
+    const updateTimer = () => {
+        const endTime = new Date(date).getTime();
+        const now = new Date().getTime();
+        const timeLeft = endTime - now;
 
-        var timeLeft = endTime - now;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            document.getElementById('timer').innerHTML = `
+                <div class="date-box">
+                    <div class="numbers">00</div><div class="text">days</div>
+                </div>
+                <div class="date-box">
+                    <div class="numbers">00</div><div class="text">hours</div>
+                </div>
+                <div class="date-box">
+                    <div class="numbers">00</div><div class="text">minutes</div>
+                </div>
+                <div class="date-box">
+                    <div class="numbers">00</div><div class="text">seconds</div>
+                </div>`;
+            return;
+        }
 
-        // math
-        var days = Math.floor(timeLeft / 86400);
-        var hours = Math.floor((timeLeft - days * 86400) / 3600);
-        var minutes = Math.floor((timeLeft - days * 86400 - hours * 3600) / 60);
-        var seconds = Math.floor(
-            timeLeft - days * 86400 - hours * 3600 - minutes * 60
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        let hours = Math.floor(
+            (timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
         );
+        let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        if (hours < '10') {
-            hours = '0' + hours;
-        }
-        if (minutes < '10') {
-            minutes = '0' + minutes;
-        }
-        if (seconds < '10') {
-            seconds = '0' + seconds;
-        }
+        hours = hours < 10 ? `0${hours}` : hours;
+        minutes = minutes < 10 ? `0${minutes}` : minutes;
+        seconds = seconds < 10 ? `0${seconds}` : seconds;
 
-        // display
-        document.getElementById('timer').innerHTML =
-            '<div class="date-box"> \
-		<div class="numbers">' +
-            days +
-            '</div><div class="text">days</div></div> \
-		<div class="date-box"> \
-		<div class="numbers">' +
-            hours +
-            '</div><div class="text">hours</div></div> \
-		<div class="date-box"> \
-		<div class="numbers">' +
-            minutes +
-            '</div><div class="text">minutes</div></div> \
-		<div class="date-box"> \
-		<div class="numbers">' +
-            seconds +
-            '</div><div class="text">seconds</div></div>';
-    }, 100);
+        document.getElementById('timer').innerHTML = `
+            <div class="date-box">
+                <div class="numbers">${days}</div><div class="text">days</div>
+            </div>
+            <div class="date-box">
+                <div class="numbers">${hours}</div><div class="text">hours</div>
+            </div>
+            <div class="date-box">
+                <div class="numbers">${minutes}</div><div class="text">minutes</div>
+            </div>
+            <div class="date-box">
+                <div class="numbers">${seconds}</div><div class="text">seconds</div>
+            </div>`;
+    };
 
-    var d = new Date();
-    var curr_date = d.getDate();
-    var curr_month = d.getMonth() + 1;
-    var curr_year = d.getFullYear();
-    /*========== Countdown end ================*/
+    const timer = setInterval(updateTimer, 1000);
+    updateTimer(); // Initial call to display the countdown immediately
 });
